@@ -1,15 +1,23 @@
 #!/usr/bin/env bash 
 /bin/bash --login
 
+branch='develop';
+buildtapas_repo="https://github.com/lindajeanne/buildtapas.git"
+buildtapas_stub="https://raw.githubusercontent.com/LindaJeanne/buildtapas/$branch/stub.make"
+buildtapas_stub_file="stub.make"
+buildtapas_sh="https://raw.githubusercontent.com/LindaJeanne/buildtapas/$branch/buildtapas.sh"
+buildtapas_sh_file="buildtapas_reboot.sh"
+
 # Before doing anything else, verify that the specified buildtapas branch 
 # exists on github and is accessible.
-branch=$2
-buildtapas_repo="https://github.com/neu-dsg/buildtapas.git"
+# branch=$2
+# buildtapas_repo="https://github.com/neu-dsg/buildtapas.git"
 all_repos=$(git ls-remote -h $buildtapas_repo $branch)
 
 # This check ensures that we are getting an exact match on our branch
+#if [[ $all_repos != *"refs/heads/$branch"* ]]; then
 if [[ $all_repos != *"refs/heads/$branch"* ]]; then
-  echo "There is no buildtapas branch on github named $branch" >&2
+  echo "There is no $buldtapas_repo branch on github named $branch" >&2
   exit 1
 fi
 
@@ -82,10 +90,10 @@ echo "export PATH=\$PATH:/home/vagrant/.composer/vendor/bin" >> /home/vagrant/.b
 # buildtapas script places the site in the directory it is executed from.
 # it requires stub.make to be in the same directory.
 cd /var/www/html
-curl -O https://raw.githubusercontent.com/neu-dsg/buildtapas/$branch/buildtapas.sh
-curl -O https://raw.githubusercontent.com/neu-dsg/buildtapas/$branch/stub.make
-sed -i.bak 's/8080/3306/g' buildtapas.sh
-/bin/bash --login /var/www/html/buildtapas.sh "root" "" "tapas_drupal" "drupaldb" "drupaldb"
+curl -O $buildtapas_sh
+curl -O $buildtapas_stub
+sed -i.bak 's/8080/3306/g' $buildtapas_sh_file
+/bin/bash --login /var/www/html/$buildtapas_sh_file "root" "" "tapas_drupal" "drupaldb" "drupaldb"
 
 # Set the admin password to always be 'admin'
 cd /var/www/html
